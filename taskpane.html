@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mẫu rep mail bảo hành</title>
+<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:12px;font:13px/1.4 "Segoe UI",Arial,sans-serif;color:#242424;background:#fff}
+h1{font-size:15px;margin:0 0 6px;font-weight:600}
+label{display:block;font-weight:600;margin:8px 0 2px;color:#424242}
+input,select,textarea{width:100%;padding:5px 7px;border:1px solid #c8c8c8;border-radius:3px;font:inherit;background:#fff}
+input:focus,select:focus,textarea:focus{outline:2px solid #0f6cbd;outline-offset:-1px;border-color:#0f6cbd}
+textarea{min-height:56px;resize:vertical}
+select.pre{margin-bottom:3px;color:#555;font-size:12px}
+.auto{font-weight:400;color:#107c10;font-size:11px;margin-left:4px}
+.row{display:flex;gap:8px}.row>div{flex:1;min-width:0}
+.sec{margin:14px 0 4px;padding-top:10px;border-top:1px solid #e1e1e1;font-weight:600}
+.btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+button{padding:6px 12px;border:1px solid #c8c8c8;border-radius:3px;background:#fff;font:inherit;cursor:pointer}
+button.p{background:#0f6cbd;border-color:#0f6cbd;color:#fff}
+button:hover{filter:brightness(.95)}
+button:focus-visible{outline:2px solid #0f6cbd;outline-offset:2px}
+#pv{margin-top:6px;padding:8px;border:1px dashed #b0b0b0;border-radius:3px;overflow-x:auto;background:#fff}
+#msg{min-height:18px;margin-top:6px;font-size:12px;color:#107c10}
+#msg.err{color:#a4262c}
+.hide{display:none}
+</style>
+</head>
+<body>
+<h1>Mẫu rep mail bảo hành</h1>
+
+<label for="sc">Tình huống</label>
+<select id="sc"></select>
+
+<label for="gr">Lời chào đầu thư</label>
+<select class="pre" id="grP"></select>
+<input id="gr">
+
+<label for="op">Câu mở đầu</label>
+<select class="pre" id="opP"></select>
+<textarea id="op"></textarea>
+
+<div class="sec">Thông tin ca</div>
+<div class="row">
+  <div><label for="ma">Mã yêu cầu<span class="auto" data-k="ma"></span></label><input id="ma"></div>
+  <div><label for="serial">Mã máy / Serial<span class="auto" data-k="serial"></span></label><input id="serial"></div>
+</div>
+<label for="sp">Tên sản phẩm<span class="auto" data-k="sp"></span></label><input id="sp">
+<div class="tbl">
+  <label for="kh">Khách hàng<span class="auto" data-k="kh"></span></label><input id="kh">
+  <div class="row">
+    <div><label for="sdt">Số điện thoại<span class="auto" data-k="sdt"></span></label><input id="sdt"></div>
+    <div><label for="ngaymua">Ngày mua<span class="auto" data-k="ngaymua"></span></label><input id="ngaymua"></div>
+  </div>
+  <label for="dc">Địa chỉ<span class="auto" data-k="dc"></span></label><textarea id="dc"></textarea>
+  <label for="pa">Nội dung phản ánh<span class="auto" data-k="pa"></span></label><input id="pa">
+</div>
+
+<div class="sec">Xử lý</div>
+<div class="tbl row">
+  <div><label for="ngayxl">Ngày cập nhật</label><input id="ngayxl"></div>
+  <div><label for="tt">Tình trạng</label><select id="tt"></select></div>
+</div>
+<div class="tbl"><label for="hen">Lịch hẹn / dự kiến hoàn tất (nếu có)</label><input id="hen" placeholder="VD: KTV hẹn khách 10h ngày 18/11/2026"></div>
+<label for="xl">Nội dung xử lý / bổ sung</label>
+<textarea id="xl" placeholder="VD: Hãng đã liên hệ khách tư vấn báo giá linh kiện lõi lọc…"></textarea>
+
+<label for="cl">Câu kết thúc</label>
+<select class="pre" id="clP"></select>
+<textarea id="cl"></textarea>
+<label for="so">Lời chào cuối thư</label>
+<input id="so" value="Trân trọng,">
+
+<div class="sec">Xem trước</div>
+<div id="pv"></div>
+<div id="msg" role="status"></div>
+<div class="btns">
+  <button class="p rd" id="bAll">Trả lời tất cả</button>
+  <button class="rd" id="bRe">Trả lời</button>
+  <button class="p cp hide" id="bIns">Chèn vào mail</button>
+  <button id="bCopy">Copy nội dung</button>
+</div>
+
+<script>
+/* ===== Cấu hình mẫu: sửa câu chữ tại đây ===== */
+var HOTLINE = "19006418";
+var FONT = "font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#222;";
+var NAVY = "#1F4E79";
+var GREETINGS = ["Kính gửi Quý Siêu thị,","Kính gửi Anh/Chị phụ trách Siêu thị,","Kính gửi Quý Hãng Karofi,","Kính gửi Anh/Chị Điều phối bảo hành,","Kính gửi Phòng Chăm sóc Khách hàng Karofi,"];
+var STATUS = {"Đã tiếp nhận":"#1F4E79","Đang xử lý":"#B26A00","Đã hẹn lịch với khách":"#1F4E79","Chờ khách phản hồi":"#B26A00","Đã hoàn tất":"#2E7D32"};
+/* t=1: có bảng thông tin; t=0: chỉ văn bản. g: lời chào mặc định; st: tình trạng mặc định */
+var SC = {
+ tn:{n:"Tiếp nhận thông tin",t:1,st:"Đã tiếp nhận",
+     o:"Karofi đã tiếp nhận thông tin phản ánh của Quý Siêu thị về ca bảo hành dưới đây. Hãng sẽ xử lý và cập nhật kết quả sớm nhất.",
+     c:"Quý Siêu thị vui lòng nắm thông tin. Trân trọng cảm ơn sự phối hợp của Quý Siêu thị."},
+ cn:{n:"Cập nhật tình trạng xử lý",t:1,st:"Đang xử lý",
+     o:"Karofi xin cập nhật tình trạng xử lý ca bảo hành dưới đây:",
+     c:"Hãng sẽ tiếp tục theo dõi và thông tin đến Quý Siêu thị ngay khi có kết quả mới."},
+ ht:{n:"Thông báo hoàn tất",t:1,st:"Đã hoàn tất",
+     o:"Karofi xin thông báo ca bảo hành dưới đây đã được xử lý xong:",
+     c:"Nếu cần hỗ trợ thêm, Quý Siêu thị vui lòng phản hồi email này hoặc liên hệ Hotline "+HOTLINE+". Trân trọng cảm ơn."},
+ kt:{n:"Đã nhắc kỹ thuật viên",t:0,
+     o:"Hãng đã nhắc Kỹ thuật viên chủ động liên hệ khách hàng để hẹn lịch và ưu tiên xử lý sớm trong tuần này.",
+     c:"Quý Siêu thị nắm thông tin cùng Hãng. Trân trọng cảm ơn."},
+ ph:{n:"Nhờ Hãng phản hồi kết quả",t:0,g:"Kính gửi Quý Hãng Karofi,",
+     o:"Siêu thị xin nhờ Hãng kiểm tra và phản hồi kết quả xử lý ca bảo hành dưới đây.",
+     c:"Rất mong sớm nhận được phản hồi từ Hãng. Trân trọng cảm ơn."}
+};
+var OPEN_EXTRA = ["Karofi đã liên hệ khách hàng và ghi nhận thông tin như sau:","Hãng đã liên hệ khách hàng, thông tin cụ thể như sau:"];
+var CLOSE_EXTRA = ["Mọi thông tin cần bổ sung, Quý Siêu thị vui lòng phản hồi trực tiếp email này.","Rất mong Quý Siêu thị thông cảm và tiếp tục đồng hành cùng Karofi."];
+/* ============================================= */
+
+var IDS = ["gr","op","ma","serial","sp","kh","sdt","ngaymua","dc","pa","ngayxl","tt","hen","xl","cl","so"];
+var LABELS = {"KHACH HANG":"kh","SO DIEN THOAI":"sdt","DIA CHI":"dc","TEN SAN PHAM":"sp","NGAY MUA":"ngaymua","THONG TIN PHAN ANH":"pa"};
+var $ = function(i){return document.getElementById(i)};
+var item = null, compose = false;
+
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>")}
+function norm(s){s=String(s).replace(/\s+/g," ").trim(); if(s.normalize)s=s.normalize("NFD"); return s.replace(/[\u0300-\u036f]/g,"").replace(/[đĐ]/g,"D").toUpperCase()}
+function today(){var d=new Date(),p=function(n){return n<10?"0"+n:n};return p(d.getDate())+"/"+p(d.getMonth()+1)+"/"+d.getFullYear()}
+function tidy(s,title){ /* chữ IN HOA -> Viết Hoa Đầu Từ / Viết hoa đầu câu */
+  if(s!==s.toUpperCase()||s===s.toLowerCase())return s;
+  var l=s.toLowerCase();
+  return title?l.replace(/(^|[\s(\-,.])(\S)/g,function(m,a,b){return a+b.toUpperCase()}):l.charAt(0).toUpperCase()+l.slice(1);
+}
+function val(){var v={};IDS.forEach(function(k){v[k]=$(k).value.trim()});return v}
+
+function parseSubject(s){
+  var o={}, m=s.match(/\[([^\]]+)\]/); if(m)o.ma=m[1];
+  var rest=s.replace(/^\s*((re|fw|fwd)\s*:\s*)+/i,"").replace(/\[[^\]]+\]\s*/,"");
+  var p=rest.split(/\s+[—–]\s+/);
+  if(p.length>=3){o.sp=p[1].trim();o.serial=p[2].trim()}
+  var ph=s.match(/\b0\d{9,10}\b/); if(ph)o.sdt=ph[0];
+  return o;
+}
+function parseBody(html){
+  var o={}, d=new DOMParser().parseFromString(html,"text/html");
+  [].forEach.call(d.querySelectorAll("tr"),function(tr){
+    var c=tr.children; if(c.length<2)return;
+    var k=LABELS[norm(c[0].textContent)];
+    if(k&&!o[k])o[k]=c[1].textContent.replace(/\s+/g," ").trim();
+  });
+  return o;
+}
+
+/* ---- Dựng HTML: dùng bảng + inline style để Outlook (Word) hiển thị đúng ---- */
+var BD="1px solid #BFC9D4";
+function tr(l,x,raw){ if(!x)return ""; var c="border:"+BD+";padding:5px 10px;vertical-align:top;";
+  return '<tr><td style="'+c+'background:#EEF3F8;color:#1F3864;font-weight:bold;width:150px">'+l+'</td><td style="'+c+'">'+(raw?x:esc(x))+'</td></tr>'}
+function band(t,bg,fg){return '<tr><td colspan="2" style="border:'+BD+';padding:6px 10px;background:'+bg+';color:'+fg+';font-weight:bold">'+esc(t)+'</td></tr>'}
+function build(){
+  var v=val(), s=SC[$("sc").value], h='<div style="'+FONT+'">';
+  h+='<p style="margin:0 0 10px">'+esc(v.gr)+'</p>';
+  if(v.op)h+='<p style="margin:0 0 10px">'+esc(v.op)+'</p>';
+  var ref=[v.ma&&"Mã yêu cầu: "+v.ma, v.sp, v.serial&&"Mã máy: "+v.serial].filter(Boolean).join("  |  ");
+  if(s.t){
+    var col=STATUS[v.tt]||NAVY;
+    h+='<table cellspacing="0" cellpadding="0" style="border-collapse:collapse;width:100%;max-width:640px;'+FONT+'">'+
+      band("Thông tin ca bảo hành"+(v.ma?" — "+v.ma:""),NAVY,"#FFFFFF")+
+      tr("Khách hàng",tidy(v.kh,1))+tr("Số điện thoại",v.sdt)+tr("Địa chỉ",tidy(v.dc,1))+
+      tr("Sản phẩm",v.sp+(v.serial?"\nMã máy: "+v.serial:""))+tr("Ngày mua",v.ngaymua)+tr("Nội dung phản ánh",tidy(v.pa,0))+
+      band("Cập nhật xử lý","#DCE9F5",NAVY)+
+      tr("Ngày cập nhật",v.ngayxl)+(v.tt?tr("Tình trạng",'<b style="color:'+col+'">'+esc(v.tt)+'</b>',1):"")+
+      tr("Lịch hẹn / dự kiến",v.hen)+tr("Nội dung xử lý",v.xl)+'</table>';
+  }else{
+    if(ref)h+='<table cellspacing="0" cellpadding="0" style="border-collapse:collapse;width:100%;max-width:640px"><tr><td style="background:#EEF3F8;border-left:4px solid '+NAVY+';padding:6px 10px;color:#1F3864">'+esc(ref)+'</td></tr></table>';
+    if(v.xl)h+='<p style="margin:10px 0 0">'+esc(v.xl)+'</p>';
+  }
+  if(v.cl)h+='<p style="margin:12px 0 0">'+esc(v.cl)+'</p>';
+  if(v.so)h+='<p style="margin:12px 0 0">'+esc(v.so)+'</p>';
+  return h+'</div>';
+}
+function render(){$("pv").innerHTML=build()}
+function say(t,err){var m=$("msg");m.textContent=t;m.className=err?"err":"";}
+
+function opts(sel,list,first){sel.innerHTML="";var o=document.createElement("option");o.value="";o.textContent=first;sel.appendChild(o);
+  list.forEach(function(t){var e=document.createElement("option");e.value=t;e.textContent=t.length>64?t.slice(0,62)+"…":t;sel.appendChild(e)})}
+function applyScenario(){
+  var s=SC[$("sc").value];
+  [].forEach.call(document.querySelectorAll(".tbl"),function(e){e.className=e.className.replace(/ ?hide/,"")+(s.t?"":" hide")});
+  $("gr").value=s.g||GREETINGS[0]; $("op").value=s.o; $("cl").value=s.c; if(s.st)$("tt").value=s.st;
+  render();
+}
+function fill(o){
+  [].forEach.call(document.querySelectorAll(".auto"),function(e){e.textContent=""});
+  for(var k in o){ if(o[k]){ $(k).value=o[k]; var a=document.querySelector('.auto[data-k="'+k+'"]'); if(a)a.textContent="(tự điền)"; } }
+  render();
+}
+
+function load(){
+  IDS.forEach(function(k){$(k).value=""}); $("so").value="Trân trọng,"; $("ngayxl").value=today();
+  applyScenario();
+  item=(window.Office&&Office.context&&Office.context.mailbox)?Office.context.mailbox.item:null;
+  if(!item){
+    fill({ma:"BHE-2026-004550",sp:"Máy lọc nước nóng lạnh KAROFI KAD-D61",serial:"C06112412349",sdt:"0769700967",
+          kh:"CHÂU KIM LOAN",dc:"GẦN TRẠM Y TẾ - NGUYỄN SIÊU - P7 - ĐÀ LẠT, PHƯỜNG 7, THÀNH PHỐ ĐÀ LẠT, TỈNH LÂM ĐỒNG",
+          ngaymua:"14/11/2024",pa:"THAY LÕI"});
+    say("Chế độ xem thử (chưa chạy trong Outlook).");return;
+  }
+  compose=typeof item.subject==="object"&&typeof item.subject.getAsync==="function";
+  [].forEach.call(document.querySelectorAll(".rd"),function(b){b.className=b.className.replace(" hide","")+(compose?" hide":"")});
+  $("bIns").className="p cp"+(compose?"":" hide");
+  var merge=function(subj,html){
+    var b={};try{b=parseBody(html||"")}catch(e){}
+    var s=parseSubject(subj||""),o={},k;
+    for(k in b)o[k]=b[k]; for(k in s)if(s[k])o[k]=s[k];
+    fill(o);
+  };
+  var getBody=function(subj){item.body.getAsync(Office.CoercionType.Html,function(r){merge(subj,r.status==="succeeded"?r.value:"")})};
+  if(compose)item.subject.getAsync(function(r){getBody(r.value)});else getBody(item.subject);
+}
+
+$("bCopy").onclick=function(){
+  var p=$("pv"),r=document.createRange();r.selectNodeContents(p);
+  var s=window.getSelection();s.removeAllRanges();s.addRange(r);
+  var ok=false;try{ok=document.execCommand("copy")}catch(e){}
+  s.removeAllRanges();
+  say(ok?"Đã copy. Dán (Ctrl+V) vào mail trả lời.":"Chưa copy được: bôi đen phần xem trước rồi nhấn Ctrl+C.",!ok);
+};
+$("bAll").onclick=function(){if(item)item.displayReplyAllForm({htmlBody:build()});else say("Chỉ dùng được trong Outlook.",true)};
+$("bRe").onclick=function(){if(item)item.displayReplyForm({htmlBody:build()});else say("Chỉ dùng được trong Outlook.",true)};
+$("bIns").onclick=function(){
+  if(!item)return say("Chỉ dùng được trong Outlook.",true);
+  item.body.setSelectedDataAsync(build(),{coercionType:Office.CoercionType.Html},function(r){
+    say(r.status==="succeeded"?"Đã chèn vào vị trí con trỏ.":"Không chèn được: hãy bấm vào thân mail trước.",r.status!=="succeeded");
+  });
+};
+
+/* ---- Khởi động ---- */
+var k,all;
+for(k in SC){var e=document.createElement("option");e.value=k;e.textContent=SC[k].n;$("sc").appendChild(e)}
+Object.keys(STATUS).forEach(function(t){var e=document.createElement("option");e.value=t;e.textContent=t;$("tt").appendChild(e)});
+opts($("grP"),GREETINGS,"Chọn lời chào gợi ý");
+all=[];for(k in SC)all.push(SC[k].o);opts($("opP"),all.concat(OPEN_EXTRA),"Chọn câu mở đầu gợi ý");
+all=[];for(k in SC)all.push(SC[k].c);opts($("clP"),all.concat(CLOSE_EXTRA),"Chọn câu kết thúc gợi ý");
+[["grP","gr"],["opP","op"],["clP","cl"]].forEach(function(p){$(p[0]).onchange=function(){if(this.value){$(p[1]).value=this.value;this.selectedIndex=0;render()}}});
+$("sc").onchange=applyScenario;
+IDS.forEach(function(i){$(i).oninput=render;$(i).onchange=render});
+function start(){load();try{Office.context.mailbox.addHandlerAsync(Office.EventType.ItemChanged,load)}catch(e){}}
+if(window.Office&&Office.onReady){Office.onReady(start)}else{start()}
+</script>
+</body>
+</html>
